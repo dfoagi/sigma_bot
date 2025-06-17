@@ -1,0 +1,14 @@
+venv/
+testenv/
+__pycache__/
+helper/data/ready jsons
+.env
+*.pyc
+*.pyo
+*.pyd
+
+logs/
+*.log
+
+.vscode/
+.DS_Store
