@@ -38,14 +38,14 @@ cd sigma-bot
 ### 2. Создай `.env` файл:
 
 ```env
-BOT_TOKEN=your_telegram_bot_token
-ADMIN_ID=123456789
-OPENAI_API_KEY=your_openai_key
-OPENAI_BASE_URL=https://api.proxyapi.ru/openai
-PROXYAPI_KEY=your_proxyapi_key
+TELEGRAM_BOT_TOKEN=your_telegram_bot_token
+TELEGRAM_GROUP_ID=-123456789012
+PROXY_API_KEY=your_proxyapi_key
+PROXY_API_BASE_URL_OPENAI=https://api.proxyapi.ru/openai/v1
 QDRANT_URL=https://your-cloud-qdrant-host
 QDRANT_API_KEY=your_qdrant_api_key
-QDRANT_COLLECTION=sigmaRP_large
+ADMIN_ID=123456789
+COLLECTION_NAME=your_qdrant_collection_name
 ```
 
 ### 3. Запусти через Docker:
@@ -72,36 +72,3 @@ docker compose up --build -d
 ├── .env
 └── README.md
 ```
-
----
-
-## 📌 Команды бота
-
-- `/start` — запуск
-- `/set_model` — выбор модели (доступно только админу)
-- `/model` — текущая модель
-- `вопрос` — любой текст, бот отвечает по руководству
-
----
-
-## 🔐 Безопасность
-
-- `.env` добавлен в `.gitignore`
-- Команды администратора ограничены по `ADMIN_ID`
-- Лимиты на частые запросы + FSM
-
----
-
-## 🛠️ TODO (по желанию)
-
-- [ ] Добавить логирование в БД
-- [ ] Подключить Telegram WebApp
-- [ ] Реализовать `/export_logs`
-- [ ] Добавить CI/CD через GitHub Actions
-
----
-
-## 👨‍💻 Автор
-
-Разработка: [@yourname](https://t.me/yourname)  
-Поддержка: support@3ksigma.ru
