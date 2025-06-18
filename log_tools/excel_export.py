@@ -7,6 +7,11 @@ LOG_FILE = os.path.join("logs", "logs.xlsx")
 
 
 def log_to_excel(username, user_id, question, answer, input_tokens, output_tokens, chapter_ids, chapter_scores, model):
+    
+    logs_dir = os.path.dirname(LOG_FILE)
+    if not os.path.exists(logs_dir):
+        os.makedirs(logs_dir)
+
     if os.path.exists(LOG_FILE):
         wb = load_workbook(LOG_FILE)
         ws = wb.active

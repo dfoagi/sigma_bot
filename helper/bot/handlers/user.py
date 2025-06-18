@@ -84,7 +84,7 @@ async def handle_message(message: Message):
         f'@{username}:\n"{user_message}"\n\n'
         f"<b>{used_model}</b>:\n\"{got_ans}\""
     )
-    # await message.bot.send_message(chat_id=GROUP_ID, text=group_text, parse_mode='HTML')
+    await message.bot.send_message(chat_id=GROUP_ID, text=group_text, parse_mode='HTML')
 
     await log_queue.put({
         "username": username,
