@@ -17,7 +17,7 @@ Telegram-бот, который помогает пользователям на
 
 ## ⚙️ Используемые технологии
 
-- 🐍 Python 3.11+
+- 🐍 Python 3.10+
 - 🤖 Aiogram 3.x
 - 🔍 Qdrant (облачная векторная БД)
 - 🧠 OpenAI / Gemini / Claude (LLM)
@@ -31,7 +31,7 @@ Telegram-бот, который помогает пользователям на
 ### 1. Клонируй проект:
 
 ```bash
-git clone https://github.com/you/sigma-bot.git
+git clone https://github.com/dfoagi/sigma_bot
 cd sigma-bot
 ```
 
@@ -51,7 +51,7 @@ COLLECTION_NAME=your_qdrant_collection_name
 ### 3. Запусти через Docker:
 
 ```bash
-docker compose up --build -d
+docker-compose up --build -d
 ```
 
 ---
@@ -61,13 +61,14 @@ docker compose up --build -d
 ```
 ├── bot/
 │   ├── handlers/         # user.py, admin.py, system.py
-│   └── main.py
+│   └── moderation.py
 ├── core/                 # get_answer, qdrant, LLM вызовы
 ├── helper/               # модель, блокировки, клиенты
 ├── logging/              # очередь логов и логгеры
 ├── logs/                 # Excel-файл с логами
 ├── Dockerfile
 ├── docker-compose.yml
+├── main.py
 ├── requirements.txt
 ├── .env
 └── README.md
