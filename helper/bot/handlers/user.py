@@ -69,10 +69,11 @@ async def handle_message(message: Message):
 
     except Exception as e:
         await status_msg.delete()
-        await message.answer("Произошла ошибка, она уже отправлена службе поддержки. Если вопрос срочный - напишите на support@3ksigma.ru")
+        await message.answer("Произошла ошибка, она уже отправлена службе поддержки. \n"
+                             "Если вопрос срочный - напишите на support@3ksigma.ru")
         await message.bot.send_message(
             chat_id=ADMIN_ID,
-            text=f"Ошибка у @{username}:\n<pre>{e}</pre>",
+            text=f"⚠️ Ошибка у @{username}:\n<pre>{e}</pre>",
             parse_mode="HTML"
         )
         return
