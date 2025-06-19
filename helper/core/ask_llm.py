@@ -10,7 +10,7 @@ from helper.core.llm_clients import openai_client, anthropic_client, genai_clien
 def ask_chatgpt(client: OpenAI, context: str, user_question: str, model: str) -> dict:
 
     my_messages = [
-        {"role": "system", "content": "Ты помощник по продукту. Отвечай ясно и по делу, как специалист техподдержки."},
+        {"role": "system", "content": "Ты помощник по продукту. Отвечай ясно и по делу, как специалист техподдержки. На языке, котором задали вопрос"},
         {"role": "user", "content": f"""
         Вот часть руководства, в которой нужно смотреть:
 
@@ -42,7 +42,7 @@ def ask_anthropic(client: anthropic.Anthropic, context: str, user_question: str,
     response = client.messages.create(
         model=model,
         max_tokens=1000,
-        system="Ты помощник по продукту. Отвечай ясно и по делу, как специалист техподдержки.",
+        system="Ты помощник по продукту. Отвечай ясно и по делу, как специалист техподдержки. На языке, котором задали вопрос",
         messages=[
             {
                 "role": "user",
@@ -81,7 +81,7 @@ def ask_gemini(client: genai.Client, context: str, user_question: str, model: st
     response = client.models.generate_content(
         model=model,
         config=genai.types.GenerateContentConfig(
-            system_instruction="Ты помощник по продукту. Отвечай ясно и по делу, как специалист техподдержки."),
+            system_instruction="Ты помощник по продукту. Отвечай ясно и по делу, как специалист техподдержки. На языке, котором задали вопрос"),
         contents=f"""
             Вот часть руководства, в которой нужно смотреть:
 
