@@ -39,9 +39,9 @@ async def handle_start(message: Message):
     if message.from_user.id == ADMIN_ID:
         await message.answer(
             "Чтобы забанить напиши:\n"
-            "Забанить @юзернейм *кол-во минут*\n\n"
+            "Забанить user_id *кол-во минут*\n\n"
             "Чтобы разбанить напиши:\n"
-            "Разбанить @юзернейм \n\n"
+            "Разбанить user_id \n\n"
             "Чтобы получить логи:\n"
             "Получить логи или /logs\n\n"
             "Сменить модель - /set_model \n"
@@ -55,12 +55,13 @@ async def handle_start(message: Message):
 async def handle_message(message: Message):
     user_message = message.text
     username = message.from_user.username
+    user_id = message.from_user.id
 
-    if is_user_blocked(username):
+    if is_user_blocked(user_id):
         await message.answer("Повторите попытку через несколько минут или обратитесь в техподдержку")
         return
 
-    if is_rate_limited(username):
+    if is_rate_limited(user_id):
         await message.answer("⏳ Пожалуйста, подождите 20 секунд перед следующим сообщением.")
         return
 
@@ -83,7 +84,7 @@ async def handle_message(message: Message):
                              "Если вопрос срочный - напишите на support@3ksigma.ru")
         await message.bot.send_message(
             chat_id=ADMIN_ID,
-            text=f"⚠️ Ошибка у @{username}:\n<pre>{e}</pre>",
+            text=f"⚠️ Ошибка у @{username} id={user_id}:\n<pre>{e}</pre>",
             parse_mode="HTML"
         )
         return
@@ -92,7 +93,7 @@ async def handle_message(message: Message):
     await message.answer(got_ans)
 
     group_text = (
-        f'@{username}:\n"{user_message}"\n\n'
+        f'@{username} id={user_id}:\n"{user_message}"\n\n'
         f"<b>{used_model}</b>:\n\"{got_ans}\""
     )
     await message.bot.send_message(chat_id=GROUP_ID, text=group_text, parse_mode='HTML')

@@ -108,13 +108,12 @@ async def send_logs(message: Message):
 async def handle_block_command(message: Message):
     if message.from_user.id != ADMIN_ID:
         return
-
     try:
         _, user_str, minutes_str = message.text.split()
-        username = user_str.lstrip("@")
+        user_id = int(user_str)
         minutes = int(minutes_str)
-        block_user(username, minutes)
-        await message.answer(f"✅ Пользователь @{username} заблокирован на {minutes} минут.")
+        block_user(user_id, minutes)
+        await message.answer(f"✅ Пользователь {user_id} заблокирован на {minutes} минут.")
 
     except Exception:
         await message.answer("⚠️ Использование: блок @username 60")
