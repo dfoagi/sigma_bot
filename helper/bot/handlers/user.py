@@ -31,11 +31,18 @@ start_help_message = '''
 
 @user_router.message(Command("start"))
 async def handle_start(message: Message):
+    await message.bot.send_message(
+        chat_id=GROUP_ID,
+        text=f"Новый рользователь \n@{message.from_user.username}\n"
+             f"id: {message.from_user.id}\n"
+             f"first_name: {message.from_user.first_name}\n"
+             f"last_name: {message.from_user.last_name}\n",
+        parse_mode='HTML')
     await message.answer(start_help_message, parse_mode='HTML')
 
 
 @user_router.message(Command("help"))
-async def handle_start(message: Message):
+async def handle_help(message: Message):
     if message.from_user.id == ADMIN_ID:
         await message.answer(
             "Чтобы забанить напиши:\n"
@@ -90,11 +97,16 @@ async def handle_message(message: Message):
         return
 
     await status_msg.delete()
-    await message.answer(got_ans)
+    await message.answer(got_ans, parse_mode="HTML")
 
     group_text = (
-        f'@{username} id={user_id}:\n"{user_message}"\n\n'
-        f"<b>{used_model}</b>:\n\"{got_ans}\""
+        f'Вопрос от:\n'
+        f'@{message.from_user.username}\n'
+        f'id: {message.from_user.id}\n'
+        f'first_name: {message.from_user.first_name}\n'
+        f'last_name: {message.from_user.last_name}\n\n'
+        f'Вопрос:\n<pre>{user_message}</pre>\n\n'
+        f'<b>{used_model}</b>:\n<pre>{got_ans}</pre>'
     )
     await message.bot.send_message(chat_id=GROUP_ID, text=group_text, parse_mode='HTML')
 
