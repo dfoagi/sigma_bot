@@ -105,8 +105,8 @@ async def handle_message(message: Message):
         f'id: {message.from_user.id}\n'
         f'first_name: {message.from_user.first_name}\n'
         f'last_name: {message.from_user.last_name}\n\n'
-        f'Вопрос:\n<pre>{user_message}</pre>\n\n'
-        f'<b>{used_model}</b>:\n<pre>{got_ans}</pre>'
+        f'Вопрос:\n<blockquote>{user_message}</blockquote>\n\n'
+        f'<b>{used_model}</b>:\n\n<blockquote>{got_ans}</blockquote>'
     )
     await message.bot.send_message(chat_id=GROUP_ID, text=group_text, parse_mode='HTML')
 
