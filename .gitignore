@@ -2,6 +2,7 @@ venv/
 testenv/
 __pycache__/
 helper/data/ready jsons
+helper/data/вопросы
 .env
 *.pyc
 *.pyo
