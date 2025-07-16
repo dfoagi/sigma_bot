@@ -18,6 +18,12 @@ class SetModelState(StatesGroup):
     choosing = State()
 
 
+class NotifyUserState(StatesGroup):
+    waiting_for_id = State()
+    waiting_for_message = State()
+    confirm = State()
+
+
 AVAILABLE_MODELS = [
     "gpt-4.1-mini-2025-04-14",
     "o4-mini-2025-04-16",
@@ -41,6 +47,69 @@ MODEL_PRICE = {"gpt-4.1-mini-2025-04-14": "0.5₽",
     "claude-sonnet-4-20250514": "5.8₽",
     "gemini-2.5-flash-preview-05-20": "0.05₽",
     "gemini-2.5-pro-preview-06-05": "2.6₽"}
+
+
+@admin_router.message(Command("notify_user"))
+async def notify_user_start(message: Message, state: FSMContext):
+    if message.from_user.id != ADMIN_ID:
+        return
+
+    await message.answer("Введите Telegram ID пользователя, которому хотите отправить сообщение и Message ID через пробел:")
+    await state.set_state(NotifyUserState.waiting_for_id)
+
+
+@admin_router.message(NotifyUserState.waiting_for_id)
+async def notify_user_get_id(message: Message, state: FSMContext):
+    try:
+        user_id, message_id = map(int, message.text.split())
+        await state.update_data(user_id=user_id)
+        await state.update_data(message_id=message_id)
+        await message.answer("Теперь введите ID сообщения:")
+        await state.set_state(NotifyUserState.waiting_for_message)
+    except ValueError:
+        await message.answer("⚠️ Пожалуйста, введите корректный числовой ID.")
+
+
+@admin_router.message(NotifyUserState.waiting_for_message)
+async def notify_user_get_message(message: Message, state: FSMContext):
+    await state.update_data(message_text=message.text)
+
+    data = await state.get_data()
+    preview = f"📩 Сообщение пользователю <code>{data['user_id']}</code>:\n\n{data['message_text']}"
+
+    builder = InlineKeyboardBuilder()
+    builder.button(text="✅ Отправить", callback_data="notify:send")
+    builder.button(text="❌ Отмена", callback_data="notify:cancel")
+    builder.adjust(2)
+
+    await message.answer(preview, parse_mode="HTML", reply_markup=builder.as_markup())
+    await state.set_state(NotifyUserState.confirm)
+
+
+@admin_router.callback_query(F.data.startswith("notify:"))
+async def notify_user_confirm(callback: CallbackQuery, state: FSMContext):
+    if callback.from_user.id != ADMIN_ID:
+        return await callback.answer("⛔ Недостаточно прав.", show_alert=True)
+
+    action = callback.data.split(":", 1)[1]
+
+    if action == "cancel":
+        await callback.message.edit_text("❌ Отправка сообщения отменена.")
+        await state.clear()
+        return
+
+    data = await state.get_data()
+    user_id = data["user_id"]
+    message_text = data["message_text"]
+    message_id = data["message_id"]
+
+    try:
+        await callback.bot.send_message(chat_id=user_id, text=message_text, reply_to_message_id=message_id)
+        await callback.message.edit_text("✅ Сообщение успешно отправлено.")
+    except Exception as e:
+        await callback.message.edit_text(f"❌ Не удалось отправить сообщение: <pre>{e}</pre>", parse_mode="HTML")
+
+    await state.clear()
 
 
 @admin_router.message(Command("set_model"))

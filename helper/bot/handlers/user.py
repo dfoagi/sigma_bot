@@ -52,7 +52,8 @@ async def handle_help(message: Message):
             "Чтобы получить логи:\n"
             "Получить логи или /logs\n\n"
             "Сменить модель - /set_model \n"
-            "Посмотреть модель - /cur_model \n"
+            "Посмотреть модель - /cur_model \n\n"
+            "Ответить на сообщение - /notify_user\n"
         )
     else:
         await message.answer(start_help_message, parse_mode='HTML')
@@ -102,9 +103,10 @@ async def handle_message(message: Message):
     group_text = (
         f'Вопрос от:\n'
         f'@{message.from_user.username}\n'
-        f'id: {message.from_user.id}\n'
+        f'id: <blockquote>{message.from_user.id}</blockquote>\n'
         f'first_name: {message.from_user.first_name}\n'
         f'last_name: {message.from_user.last_name}\n\n'
+        f'for_ans: <blockquote>{message.from_user.id} {message.message_id}</blockquote>\n\n'
         f'Вопрос:\n<blockquote>{user_message}</blockquote>\n\n'
         f'<b>{used_model}</b>:\n\n<blockquote>{got_ans}</blockquote>'
     )
