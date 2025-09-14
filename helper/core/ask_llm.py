@@ -5,6 +5,7 @@ import asyncio
 
 from helper.core.qdrant_client import get_relevant_chunks
 from helper.core.llm_clients import openai_client, anthropic_client, genai_client
+from helper.core.model_state import get_current_topk
 
 
 def ask_chatgpt(client: OpenAI, context: str, user_question: str, model: str) -> dict:
@@ -137,6 +138,8 @@ async def get_answer(user_question: str, qdrant_client, collection_name: str, mo
         )
     )
     question_vector = embedding_response.data[0].embedding
+
+    top_k = get_current_topk()
 
     relevant_chunks = get_relevant_chunks(
         client=qdrant_client,

@@ -8,13 +8,17 @@ from aiogram.fsm.state import State, StatesGroup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from helper.bot.moderation import block_user, unblock_user
-from helper.core.model_state import get_current_model, set_current_model
+from helper.core.model_state import get_current_model, set_current_model, get_current_topk, set_current_topk
 from config import ADMIN_ID
 
 admin_router = Router()
 
 
 class SetModelState(StatesGroup):
+    choosing = State()
+
+
+class SetTopK(StatesGroup):
     choosing = State()
 
 
@@ -154,6 +158,46 @@ async def show_current_model(message: Message):
     cur_model = get_current_model()
 
     await message.answer(f"Сейчас выбрана: \n{cur_model}")
+
+
+@admin_router.message(Command("set_topk"))
+async def start_set_topk(message: Message, state: FSMContext):
+    if message.from_user.id != ADMIN_ID:
+        return
+
+    builder = InlineKeyboardBuilder()
+    builder.button(text="❌ Отмена", callback_data="topk:cancel")
+
+    cur_topk = get_current_topk()
+
+    await message.answer(f"Сейчас Установлено топ {cur_topk} совпадений\n введите новое значенние:", reply_markup=builder.as_markup())
+    await state.set_state(SetTopK.choosing)
+
+
+@admin_router.callback_query(F.data == "topk:cancel")
+async def cancel_set_top_k(callback: CallbackQuery, state: FSMContext):
+    if callback.from_user.id != ADMIN_ID:
+        return await callback.answer("⛔ Недостаточно прав.", show_alert=True)
+
+    await callback.message.edit_text("❌ Установка top_k отменена.")
+    await state.clear()
+
+
+@admin_router.message(SetTopK.choosing)
+async def topk_value_entered(message: Message, state: FSMContext):
+    if message.from_user.id != ADMIN_ID:
+        return
+    try:
+        new_value = int(message.text)
+        if new_value <= 0:
+            raise ValueError("top_k должно быть больше 0")
+
+        set_current_topk(new_value)
+        await message.answer(f"✅ Значение top_k установлено: <b>{new_value}</b>", parse_mode="HTML")
+        await state.clear()
+
+    except ValueError:
+        await message.answer("⚠️ Введите корректное число (целое, больше 0), либо нажмите ❌ Отмена.")
 
 
 @admin_router.message(Command("logs"))
