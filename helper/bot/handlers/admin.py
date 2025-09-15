@@ -68,7 +68,7 @@ async def notify_user_get_id(message: Message, state: FSMContext):
         user_id, message_id = map(int, message.text.split())
         await state.update_data(user_id=user_id)
         await state.update_data(message_id=message_id)
-        await message.answer("Теперь введите ID сообщения:")
+        await message.answer("Теперь введите текст для отправки:")
         await state.set_state(NotifyUserState.waiting_for_message)
     except ValueError:
         await message.answer("⚠️ Пожалуйста, введите корректный числовой ID.")
