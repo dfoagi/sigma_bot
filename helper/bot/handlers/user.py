@@ -51,10 +51,11 @@ async def handle_help(message: Message):
             "Разбанить user_id \n\n"
             "Чтобы получить логи:\n"
             "Получить логи или /logs\n\n"
+            "Изменить время отчета - /set_report_time \n"
             "Сменить модель - /set_model \n"
             "Посмотреть модель - /cur_model \n"
             "Изменить количество ближайших векторов - /set_topk \n\n"
-            "Ответить на сообщение - /notify_user\n"
+            "Ответить на сообщение - /notify_user \n"
         )
     else:
         await message.answer(start_help_message, parse_mode='HTML')

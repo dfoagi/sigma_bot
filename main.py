@@ -7,6 +7,7 @@ from aiogram.types import BotCommand
 
 from helper.bot.handlers.user import user_router
 from helper.bot.handlers.admin import admin_router
+from helper.core.keepalive import keepalive
 from log_tools.log_worker import log_queue, log_worker
 from config import BOT_TOKEN
 
@@ -27,6 +28,7 @@ async def main():
     dp.include_routers(admin_router, user_router)
 
     asyncio.create_task(log_worker(log_queue))  #запуск очереди для записи в эксель
+    keepalive.start(bot)
     
     await bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(bot)

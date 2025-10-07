@@ -3,6 +3,9 @@ testenv/
 __pycache__/
 helper/data/ready jsons
 helper/data/вопросы
+archivator.py
+archivator2.py
+*.txt
 .env
 *.pyc
 *.pyo

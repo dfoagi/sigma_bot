@@ -1,4 +1,5 @@
 import os
+from datetime import datetime
 
 from aiogram import Router, F
 from aiogram.types import Message, FSInputFile, CallbackQuery
@@ -7,6 +8,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
+from helper.core.keepalive import get_current_report_time, set_current_report_time
 from helper.bot.moderation import block_user, unblock_user
 from helper.core.model_state import get_current_model, set_current_model, get_current_topk, set_current_topk
 from config import ADMIN_ID
@@ -19,6 +21,10 @@ class SetModelState(StatesGroup):
 
 
 class SetTopK(StatesGroup):
+    choosing = State()
+
+
+class SetReportTime(StatesGroup):
     choosing = State()
 
 
@@ -243,3 +249,44 @@ async def handle_unblock_command(message: Message):
         await message.answer(f"🔓 Пользователь @{username} разблокирован.")
     except Exception:
         await message.answer("⚠️ Использование: разблок @username")
+
+
+@admin_router.message(Command("set_report_time"))
+async def start_set_rep_time(message: Message, state: FSMContext):
+    if message.from_user.id != ADMIN_ID:
+        return
+
+    builder = InlineKeyboardBuilder()
+    builder.button(text="❌ Отмена", callback_data="reptime:cancel")
+
+    cur_report_time = get_current_report_time
+
+    await message.answer(f"Сейчас отчёт отправляется в {cur_report_time}:00\n"
+                         f"Текущее время: {datetime.now} введите новое значенние:", reply_markup=builder.as_markup())
+    await state.set_state(SetReportTime.choosing)
+
+
+@admin_router.callback_query(F.data == "reptime:cancel")
+async def cancel_set_rep_time(callback: CallbackQuery, state: FSMContext):
+    if callback.from_user.id != ADMIN_ID:
+        return await callback.answer("⛔ Недостаточно прав.", show_alert=True)
+
+    await callback.message.edit_text("❌ Установка времени отчёта отменена.")
+    await state.clear()
+
+
+@admin_router.message(SetReportTime.choosing)
+async def rep_time_entered(message: Message, state: FSMContext):
+    if message.from_user.id != ADMIN_ID:
+        return
+    try:
+        new_value = int(message.text)
+        if new_value < 0 or new_value > 23:
+            raise ValueError("Введите время от 0 до 23")
+
+        set_current_report_time(new_value)
+        await message.answer(f"✅ Новое время изменено на: <b>{new_value}:00</b>. Оно будет учтено на следующий день", parse_mode="HTML")
+        await state.clear()
+
+    except ValueError:
+        await message.answer("⚠️ Введите целое число от 0 до 23, либо нажмите ❌ Отмена.")
