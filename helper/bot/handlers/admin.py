@@ -259,10 +259,13 @@ async def start_set_rep_time(message: Message, state: FSMContext):
     builder = InlineKeyboardBuilder()
     builder.button(text="❌ Отмена", callback_data="reptime:cancel")
 
-    cur_report_time = get_current_report_time
+    cur_report_time = get_current_report_time()
+    cur_time = datetime.now()
 
-    await message.answer(f"Сейчас отчёт отправляется в {cur_report_time}:00\n"
-                         f"Текущее время: {datetime.now} введите новое значенние:", reply_markup=builder.as_markup())
+    await message.answer(f"Сейчас отчёт отправляется в <b>{cur_report_time}:00</b>\n"
+                         f"Текущее время: <b>{cur_time.hour}:{cur_time.minute}</b>\n Введите новое значенние (час):",
+                         parse_mode="HTML",
+                         reply_markup=builder.as_markup())
     await state.set_state(SetReportTime.choosing)
 
 

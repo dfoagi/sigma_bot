@@ -12,7 +12,7 @@ from config import QDRANT_URL, QDRANT_API_KEY, QDRANT_COLLECTION, ADMIN_ID
 
 logger = logging.getLogger(__name__)
 
-_current_report_time = 8    # время отправки отчета
+_current_report_time = 21    # время отправки отчета
 
 
 def get_current_report_time():
