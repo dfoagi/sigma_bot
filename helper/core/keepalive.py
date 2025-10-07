@@ -12,7 +12,7 @@ from config import QDRANT_URL, QDRANT_API_KEY, QDRANT_COLLECTION, ADMIN_ID
 
 logger = logging.getLogger(__name__)
 
-_current_report_time = 21    # время отправки отчета
+_current_report_time = 18    # время отправки отчета
 
 
 def get_current_report_time():
@@ -108,7 +108,7 @@ class KeepAlive:
         
         for _ in range(num_queries):
             # Случайное время между 9:00 и 20:00
-            hour = random.randint(9, 20)
+            hour = random.randint(5, 17)
             minute = random.randint(1, 59)
             times.append(time(hour, minute))
         
