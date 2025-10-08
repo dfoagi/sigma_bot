@@ -8,7 +8,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from helper.core.keepalive import get_current_report_time, set_current_report_time
+from helper.core.keepalive import get_current_report_time, set_current_report_time, get_current_report_status, change_report_status
 from helper.bot.moderation import block_user, unblock_user
 from helper.core.model_state import get_current_model, set_current_model, get_current_topk, set_current_topk
 from config import ADMIN_ID
@@ -263,7 +263,7 @@ async def start_set_rep_time(message: Message, state: FSMContext):
     cur_time = datetime.now()
 
     await message.answer(f"Сейчас отчёт отправляется в <b>{cur_report_time}:00</b>\n"
-                         f"Текущее время: <b>{cur_time.strftime("%H:%M")}</b>\n"
+                         f"Текущее время на сервере: <b>{cur_time.strftime('%H:%M')}</b>\n"
                          f"Введите новое значение (час):",
                          parse_mode="HTML",
                          reply_markup=builder.as_markup())
@@ -294,3 +294,37 @@ async def rep_time_entered(message: Message, state: FSMContext):
 
     except ValueError:
         await message.answer("⚠️ Введите целое число от 0 до 23, либо нажмите ❌ Отмена.")
+
+
+@admin_router.message(Command("change_report_status"))
+async def change_rep_status(message: Message, state: FSMContext):
+    if message.from_user.id != ADMIN_ID:
+        return
+
+    builder = InlineKeyboardBuilder()
+    builder.button(text="🔄 Сменить статус", callback_data="repstat:change")
+    builder.button(text="❌ Отмена", callback_data="repstat:cancel")
+
+    cur_report_status = get_current_report_status()
+
+    await message.answer(f"Статус: {'✅ Отчёт отправляется' if cur_report_status else '⛔ Отчеты не отправляются'}",
+                         parse_mode="HTML",
+                         reply_markup=builder.as_markup())
+
+
+@admin_router.callback_query(F.data == "repstat:cancel")
+async def cancel_set_rep_time(callback: CallbackQuery, state: FSMContext):
+    if callback.from_user.id != ADMIN_ID:
+        return await callback.answer("⛔ Недостаточно прав.", show_alert=True)
+
+    await callback.message.edit_text("❌ Статус не менялся")
+
+
+@admin_router.callback_query(F.data == "repstat:change")
+async def cancel_set_rep_time(callback: CallbackQuery, state: FSMContext):
+    if callback.from_user.id != ADMIN_ID:
+        return await callback.answer("⛔ Недостаточно прав.", show_alert=True)
+
+    change_report_status()
+    new_status = get_current_report_status()
+    await callback.message.edit_text(f"{'✅ Теперь отчёт отправляется' if new_status else '⛔ Теперь отчёт не отправляется'}")

@@ -12,7 +12,17 @@ from config import QDRANT_URL, QDRANT_API_KEY, QDRANT_COLLECTION, ADMIN_ID
 
 logger = logging.getLogger(__name__)
 
+_send_report = True
 _current_report_time = 18    # время отправки отчета
+
+
+def change_report_status():
+    global _send_report
+    _send_report ^= True 
+
+
+def get_current_report_status():
+    return _send_report
 
 
 def get_current_report_time():
@@ -192,7 +202,8 @@ class KeepAlive:
                 if self.is_running:
                     report_time = time(get_current_report_time())
                     await self._wait_until(report_time)
-                    await self.send_daily_report(bot)
+                    if _send_report:
+                        await self.send_daily_report(bot)
                 
                 # Ждем до 2:00 следующего дня
                 if self.is_running:
