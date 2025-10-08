@@ -157,7 +157,7 @@ class KeepAlive:
             await bot.send_message(chat_id=ADMIN_ID, text=report_text)
             logger.info("Админу отправлено предупреждени об ошибке")
         except Exception as e:
-            logger.error(f"Ошибка отправки отчета: {e}")
+            logger.error(f"Ошибка отправки отчета об ошибке: {e}")
 
 
     async def run(self, bot):
@@ -190,7 +190,7 @@ class KeepAlive:
                 
                 # Ждем до отправки отчета
                 if self.is_running:
-                    report_time = time(get_current_report_time)
+                    report_time = time(get_current_report_time())
                     await self._wait_until(report_time)
                     await self.send_daily_report(bot)
                 

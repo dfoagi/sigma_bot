@@ -263,7 +263,8 @@ async def start_set_rep_time(message: Message, state: FSMContext):
     cur_time = datetime.now()
 
     await message.answer(f"Сейчас отчёт отправляется в <b>{cur_report_time}:00</b>\n"
-                         f"Текущее время: <b>{cur_time.hour}:{cur_time.minute}</b>\n Введите новое значенние (час):",
+                         f"Текущее время: <b>{cur_time.strftime("%H:%M")}</b>\n"
+                         f"Введите новое значение (час):",
                          parse_mode="HTML",
                          reply_markup=builder.as_markup())
     await state.set_state(SetReportTime.choosing)
